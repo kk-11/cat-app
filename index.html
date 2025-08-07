@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>CAT APP 🐈‍⬛🐈</title>
+    </head>
+    <body>
+        <h1>🐈🐈‍⬛ SUCCESS 🐈‍⬛🐈</h1>
+        <main>
+            <button onClick="getLocation()">Get Location</button>
+            <p id="cat-app">Loading...</p>
+        </main>
+    </body>
+    <script>
+        const x = document.getElementById("cat-app");
+        const getLocation = () => {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(success, () =>
+                    alert("Sorry, no position available.")
+                );
+            } else {
+                x.innerHTML = "Geolocation is not supported by this browser.";
+            }
+        };
+
+        const success = (position) => {
+            x.innerHTML =
+                "🐈‍⬛ Latitude: " +
+                position.coords.latitude +
+                "<br>🐈 Longitude: " +
+                position.coords.longitude;
+        };
+    </script>
+</html>
