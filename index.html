@@ -50,11 +50,6 @@
                 background-color: #8cc6c7;
                 transform: translateY(-2px);
             }
-            button:disabled {
-                background-color: #ccc;
-                cursor: not-allowed;
-                transform: none;
-            }
             #cat-info {
                 background-color: white;
                 padding: 15px;
@@ -62,16 +57,6 @@
                 margin: 15px 0;
                 box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
                 text-align: center;
-            }
-            #loading-status {
-                background-color: #fff3cd;
-                border: 1px solid #ffeaa7;
-                color: #856404;
-                padding: 10px;
-                border-radius: 8px;
-                margin: 15px 0;
-                text-align: center;
-                display: block;
             }
             #camera-container {
                 background-color: white;
@@ -121,22 +106,6 @@
             .secondary-btn:hover {
                 background-color: #5a6268;
             }
-            .detection-result {
-                margin: 15px 0;
-                padding: 10px;
-                border-radius: 8px;
-                font-weight: 500;
-            }
-            .detection-success {
-                background-color: #d4edda;
-                border: 1px solid #c3e6cb;
-                color: #155724;
-            }
-            .detection-error {
-                background-color: #f8d7da;
-                border: 1px solid #f5c6cb;
-                color: #721c24;
-            }
             .leaflet-popup-content {
                 font-family: "Helvetica Neue", Arial, sans-serif;
             }
@@ -164,17 +133,15 @@
     </head>
     <body>
         <h1>CAT APP 🐈‍⬛🐈</h1>
-        <div id="loading-status">🧠 Loading AI cat detection model...</div>
-        <div id="cat-info" style="display: none;">Add cats to your map by taking photos</div>
-        <button id="add-cat-btn" onclick="addCat()" disabled>🐾 Add Cat</button>
+        <div id="cat-info">Add cats to your map by taking photos</div>
+        <button onclick="addCat()">🐾 Add Cat</button>
 
         <div id="camera-container">
             <h3>📸 Cat Camera</h3>
             <video id="camera-preview" autoplay playsinline></video>
             <img id="captured-photo" alt="Captured cat photo" />
-            <div id="detection-result"></div>
             <div class="camera-controls">
-                <button class="camera-btn" id="capture-btn" onclick="capturePhoto()">
+                <button class="camera-btn" onclick="capturePhoto()">
                     📷 Capture
                 </button>
                 <button
@@ -189,21 +156,12 @@
                 >
                     ❌ Cancel
                 </button>
-                <button
-                    class="camera-btn"
-                    id="add-to-map-btn"
-                    onclick="confirmAddCat()"
-                    style="display: none;"
-                >
-                    ✅ Add to Map
-                </button>
             </div>
         </div>
 
         <div id="map"></div>
 
         <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/tensorflow/4.20.0/tf.min.js"></script>
         <script>
             // Clean white base map
             const customTiles = L.tileLayer(
@@ -234,143 +192,6 @@
             let cameraVideo = null;
             let currentLocation = null;
             let catCounter = 1;
-            let model = null;
-            let currentPhotoUrl = null;
-            let detectedCat = false;
-
-            // Load MobileNet model for image classification
-            async function loadModel() {
-                try {
-                    // Load MobileNet from a reliable CDN
-                    model = await tf.loadLayersModel('https://storage.googleapis.com/tfjs-models/tfjs/mobilenet_v1_0.25_224/model.json');
-                    document.getElementById('loading-status').style.display = 'none';
-                    document.getElementById('cat-info').style.display = 'block';
-                    document.getElementById('add-cat-btn').disabled = false;
-                    console.log('Model loaded successfully');
-                } catch (error) {
-                    console.error('Error loading model:', error);
-                    // Fallback: use a simple image analysis approach
-                    model = null;
-                    document.getElementById('loading-status').innerHTML = '⚠️ AI model unavailable. Using basic image analysis.';
-                    document.getElementById('cat-info').style.display = 'block';
-                    document.getElementById('add-cat-btn').disabled = false;
-                }
-            }
-
-            // Preprocess image for model
-            function preprocessImage(imageElement) {
-                return tf.tidy(() => {
-                    // Convert image to tensor
-                    const tensor = tf.browser.fromPixels(imageElement);
-                    
-                    // Resize to 224x224 (MobileNet input size)
-                    const resized = tf.image.resizeBilinear(tensor, [224, 224]);
-                    
-                    // Normalize pixel values to [-1, 1]
-                    const normalized = resized.div(127.5).sub(1);
-                    
-                    // Add batch dimension
-                    const batched = normalized.expandDims(0);
-                    
-                    return batched;
-                });
-            }
-
-            // Detect if image contains a cat
-            async function detectCat(imageElement) {
-                if (!model) {
-                    // Fallback: Simple color and texture analysis
-                    return analyzeImageForCat(imageElement);
-                }
-
-                try {
-                    const preprocessed = preprocessImage(imageElement);
-                    const predictions = await model.predict(preprocessed).data();
-                    
-                    // Find top prediction
-                    let maxScore = 0;
-                    let maxIndex = 0;
-                    for (let i = 0; i < predictions.length; i++) {
-                        if (predictions[i] > maxScore) {
-                            maxScore = predictions[i];
-                            maxIndex = i;
-                        }
-                    }
-
-                    // MobileNet ImageNet classes - cats are typically in indices 281-292
-                    const catClasses = [281, 282, 283, 284, 285, 286, 287, 288, 289, 290, 291, 292];
-                    const isCat = catClasses.includes(maxIndex) && maxScore > 0.3;
-                    
-                    preprocessed.dispose();
-                    
-                    return {
-                        isCat: isCat,
-                        confidence: maxScore,
-                        message: isCat 
-                            ? `🐱 Cat detected! (${(maxScore * 100).toFixed(1)}% confidence)`
-                            : `🚫 No cat detected. Try getting the cat in the center of the frame.`
-                    };
-                } catch (error) {
-                    console.error('Detection error:', error);
-                    return analyzeImageForCat(imageElement);
-                }
-            }
-
-            // Fallback image analysis without ML model
-            function analyzeImageForCat(imageElement) {
-                try {
-                    // Simple image analysis based on color distribution
-                    const canvas = document.createElement('canvas');
-                    const ctx = canvas.getContext('2d');
-                    canvas.width = imageElement.width;
-                    canvas.height = imageElement.height;
-                    
-                    ctx.drawImage(imageElement, 0, 0);
-                    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-                    const data = imageData.data;
-                    
-                    // Simple heuristics for "animal-like" features
-                    let totalPixels = data.length / 4;
-                    let darkPixels = 0;
-                    let colorVariation = 0;
-                    
-                    for (let i = 0; i < data.length; i += 4) {
-                        const r = data[i];
-                        const g = data[i + 1];
-                        const b = data[i + 2];
-                        
-                        // Count darker pixels (potential fur)
-                        const brightness = (r + g + b) / 3;
-                        if (brightness < 128) darkPixels++;
-                        
-                        // Measure color variation
-                        colorVariation += Math.abs(r - g) + Math.abs(g - b) + Math.abs(b - r);
-                    }
-                    
-                    const darkRatio = darkPixels / totalPixels;
-                    const avgColorVariation = colorVariation / totalPixels;
-                    
-                    // Simple scoring based on heuristics
-                    const score = (darkRatio * 0.4 + Math.min(avgColorVariation / 100, 1) * 0.6);
-                    const isCat = score > 0.3; // Generous threshold
-                    
-                    return {
-                        isCat: isCat,
-                        confidence: score,
-                        message: isCat 
-                            ? `🐱 Looks like a cat! (Basic analysis: ${(score * 100).toFixed(1)}%)`
-                            : `🤔 Hmm, are you sure there's a cat in this photo? Try again!`
-                    };
-                } catch (error) {
-                    console.error('Fallback analysis error:', error);
-                    // If all else fails, be permissive
-                    return {
-                        isCat: true,
-                        confidence: 0.5,
-                        message: "📸 Analysis unavailable - photo accepted"
-                    };
-                }
-            }
 
             // Main function - Add Cat
             window.addCat = function () {
@@ -403,13 +224,10 @@
                 const video = document.getElementById("camera-preview");
                 const photo = document.getElementById("captured-photo");
                 const catInfo = document.getElementById("cat-info");
-                const detectionResult = document.getElementById("detection-result");
 
                 container.style.display = "block";
                 video.style.display = "block";
                 photo.style.display = "none";
-                detectionResult.innerHTML = "";
-                document.getElementById("add-to-map-btn").style.display = "none";
                 catInfo.textContent = "📸 Take a photo of your cat";
 
                 // Request camera access
@@ -437,14 +255,13 @@
                     });
             }
 
-            window.capturePhoto = async function () {
+            window.capturePhoto = function () {
                 if (!cameraVideo || !cameraStream || !currentLocation) return;
 
                 const video = cameraVideo;
                 const photo = document.getElementById("captured-photo");
                 const canvas = document.createElement("canvas");
                 const context = canvas.getContext("2d");
-                const detectionResult = document.getElementById("detection-result");
 
                 // Set canvas size to video size
                 canvas.width = video.videoWidth;
@@ -455,7 +272,6 @@
 
                 // Convert to image
                 const imageDataUrl = canvas.toDataURL("image/jpeg", 0.8);
-                currentPhotoUrl = imageDataUrl;
 
                 // Show captured photo
                 photo.src = imageDataUrl;
@@ -466,31 +282,13 @@
                 cameraStream.getTracks().forEach((track) => track.stop());
                 cameraStream = null;
 
-                // Show detection in progress
-                detectionResult.innerHTML = '<div style="color: #007bff;">🔍 Analyzing image for cats...</div>';
+                // Add to map and close camera
+                addCatToMap(imageDataUrl, currentLocation);
 
-                // Detect cat in image
-                photo.onload = async () => {
-                    const detection = await detectCat(photo);
-                    detectedCat = detection.isCat;
-                    
-                    if (detection.isCat) {
-                        detectionResult.innerHTML = `<div class="detection-success">${detection.message}</div>`;
-                        document.getElementById("add-to-map-btn").style.display = "inline-block";
-                    } else {
-                        detectionResult.innerHTML = `<div class="detection-error">${detection.message}<br>Please take a photo that includes a cat!</div>`;
-                        document.getElementById("add-to-map-btn").style.display = "none";
-                    }
-                };
-            };
-
-            window.confirmAddCat = function() {
-                if (currentPhotoUrl && currentLocation && detectedCat) {
-                    addCatToMap(currentPhotoUrl, currentLocation);
-                    setTimeout(() => {
-                        document.getElementById("camera-container").style.display = "none";
-                    }, 1000);
-                }
+                setTimeout(() => {
+                    document.getElementById("camera-container").style.display =
+                        "none";
+                }, 1000);
             };
 
             function addCatToMap(photoUrl, location) {
@@ -517,7 +315,7 @@
                     .bindPopup(
                         `<div style="text-align:center">
                             <img src="${photoUrl}" style="width: 150px; height: 100px; object-fit: cover; border-radius: 8px; margin-bottom: 8px;"><br>
-                            <strong>🐱 Verified Cat #${catCounter}</strong><br>
+                            <strong>Cat #${catCounter}</strong><br>
                             <small>${location.lat.toFixed(6)}, ${location.lng.toFixed(6)}</small>
                         </div>`
                     )
@@ -525,25 +323,18 @@
 
                 // Update info
                 const catInfo = document.getElementById("cat-info");
-                catInfo.innerHTML = `🐈 <strong>Cat #${catCounter} verified and added!</strong><br>Click "Add Cat" to add more`;
+                catInfo.innerHTML = `🐈 <strong>Cat #${catCounter} added!</strong><br>Click "Add Cat" to add more`;
 
                 catCounter++;
                 currentLocation = null;
-                currentPhotoUrl = null;
-                detectedCat = false;
             }
 
             window.retakePhoto = function () {
                 const video = document.getElementById("camera-preview");
                 const photo = document.getElementById("captured-photo");
-                const detectionResult = document.getElementById("detection-result");
 
                 photo.style.display = "none";
                 video.style.display = "block";
-                detectionResult.innerHTML = "";
-                document.getElementById("add-to-map-btn").style.display = "none";
-                currentPhotoUrl = null;
-                detectedCat = false;
 
                 // Restart camera
                 openCamera();
@@ -554,17 +345,12 @@
                     cameraStream.getTracks().forEach((track) => track.stop());
                     cameraStream = null;
                 }
-                document.getElementById("camera-container").style.display = "none";
-                document.getElementById("cat-info").textContent = "Add cats to your map by taking photos";
-                document.getElementById("detection-result").innerHTML = "";
-                document.getElementById("add-to-map-btn").style.display = "none";
+                document.getElementById("camera-container").style.display =
+                    "none";
+                document.getElementById("cat-info").textContent =
+                    "Add cats to your map by taking photos";
                 currentLocation = null;
-                currentPhotoUrl = null;
-                detectedCat = false;
             };
-
-            // Load the AI model when page loads
-            loadModel();
         </script>
     </body>
 </html>
