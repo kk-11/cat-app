@@ -4,32 +4,193 @@
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>CAT APP 🐈‍⬛🐈</title>
+        <link
+            rel="stylesheet"
+            href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        />
+        <style>
+            body {
+                font-family: "Helvetica Neue", Arial, sans-serif;
+                max-width: 800px;
+                margin: 0 auto;
+                padding: 20px;
+                background-color: #fafafa;
+                color: #5a5a5a;
+                line-height: 1.6;
+            }
+            h1 {
+                color: #ff9a9e;
+                text-align: center;
+                font-weight: 300;
+                margin-bottom: 20px;
+            }
+            #map {
+                height: 400px;
+                width: 100%;
+                border-radius: 12px;
+                margin: 20px 0;
+                border: 1px solid #e0e0e0;
+                box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+                /* Enhanced contrast for buildings */
+                filter: contrast(1.1) brightness(0.98);
+            }
+            button {
+                background-color: #a2d7d8;
+                color: white;
+                border: none;
+                padding: 10px 20px;
+                border-radius: 20px;
+                font-size: 16px;
+                cursor: pointer;
+                display: block;
+                margin: 0 auto;
+                transition: all 0.3s ease;
+            }
+            button:hover {
+                background-color: #8cc6c7;
+                transform: translateY(-2px);
+            }
+            #cat-info {
+                background-color: white;
+                padding: 15px;
+                border-radius: 8px;
+                margin: 15px 0;
+                box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+                text-align: center;
+            }
+            .leaflet-popup-content {
+                font-family: "Helvetica Neue", Arial, sans-serif;
+            }
+            .cat-marker {
+                background-color: #ffb7c5;
+                border-radius: 50%;
+                width: 30px;
+                height: 30px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: white;
+                font-size: 16px;
+                box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+            }
+            .accuracy-circle {
+                fill: none;
+                stroke: #a2d7d8;
+                stroke-width: 2;
+                stroke-opacity: 0.6;
+            }
+        </style>
     </head>
     <body>
-        <h1>🐈🐈‍⬛ SUCCESS 🐈‍⬛🐈</h1>
-        <main>
-            <button onClick="getLocation()">Get Location</button>
-            <p id="cat-app">Loading...</p>
-        </main>
-    </body>
-    <script>
-        const x = document.getElementById("cat-app");
-        const getLocation = () => {
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(success, () =>
-                    alert("Sorry, no position available.")
-                );
-            } else {
-                x.innerHTML = "Geolocation is not supported by this browser.";
-            }
-        };
+        <h1>CAT APP 🐈‍⬛🐈</h1>
+        <div id="cat-info">Click below to find your feline friends</div>
+        <button onclick="findCats()">🐾 Locate Cats</button>
+        <div id="map"></div>
 
-        const success = (position) => {
-            x.innerHTML =
-                "🐈‍⬛ Latitude: " +
-                position.coords.latitude +
-                "<br>🐈 Longitude: " +
-                position.coords.longitude;
-        };
-    </script>
+        <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+        <script>
+            // Clean white base map
+            const customTiles = L.tileLayer(
+                "https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png",
+                {
+                    attribution:
+                        '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+                    maxZoom: 20,
+                }
+            );
+
+            // Dark buildings overlay for contrast
+            const buildingOverlay = L.tileLayer(
+                "https://tiles.wmflabs.org/osm-no-labels/{z}/{x}/{y}.png",
+                {
+                    maxZoom: 20,
+                    opacity: 0.9, // Much darker buildings
+                }
+            );
+
+            const map = L.map("map", {
+                layers: [customTiles, buildingOverlay],
+                zoomControl: true,
+            }).setView([0, 0], 2);
+
+            const catIcon = L.divIcon({
+                className: "cat-marker",
+                html: "🐈",
+                iconSize: [30, 30],
+                popupAnchor: [0, -15],
+            });
+
+            function findCats() {
+                const catInfo = document.getElementById("cat-info");
+                catInfo.textContent = "Searching for cats...";
+
+                if (navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition(
+                        (position) => showCatLocation(position),
+                        () =>
+                            (catInfo.textContent =
+                                "😿 Couldn't access location (permission denied)")
+                    );
+                } else {
+                    catInfo.textContent =
+                        "Geolocation not supported by your browser";
+                }
+            }
+
+            function showCatLocation(position) {
+                const lat = position.coords.latitude;
+                const lng = position.coords.longitude;
+                const accuracy = position.coords.accuracy;
+
+                const catInfo = document.getElementById("cat-info");
+                catInfo.innerHTML = `
+                🐾 <strong>Cat coordinates</strong><br>
+                Latitude: ${lat.toFixed(6)}<br>
+                Longitude: ${lng.toFixed(6)}<br>
+                📏 Accuracy: ${Math.round(accuracy)} meters
+            `;
+
+                // Zoom to level 19 (one level out from max zoom)
+                map.flyTo([lat, lng], 19, {
+                    duration: 1,
+                    easeLinearity: 0.25,
+                });
+
+                // Clear previous markers and circles
+                map.eachLayer((layer) => {
+                    if (
+                        layer instanceof L.Circle ||
+                        layer instanceof L.Marker
+                    ) {
+                        map.removeLayer(layer);
+                    }
+                });
+
+                // Add accuracy circle
+                L.circle([lat, lng], {
+                    color: "#a2d7d8",
+                    fillColor: "#d4f0f0",
+                    fillOpacity: 0.2,
+                    radius: accuracy,
+                }).addTo(map);
+
+                // Add cat marker
+                L.marker([lat, lng], {
+                    icon: catIcon,
+                    title: "Cat location",
+                })
+                    .addTo(map)
+                    .bindPopup(
+                        `
+                <div style="text-align:center">
+                    <span style="font-size:24px">🐈‍⬛</span><br>
+                    <strong>Cat spotted here!</strong><br>
+                    <small>${lat.toFixed(6)}, ${lng.toFixed(6)}</small>
+                </div>
+            `
+                    )
+                    .openPopup();
+            }
+        </script>
+    </body>
 </html>
