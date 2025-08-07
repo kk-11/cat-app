@@ -58,6 +58,61 @@
                 box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
                 text-align: center;
             }
+
+            #camera-container {
+                background-color: white;
+                padding: 20px;
+                border-radius: 12px;
+                margin: 15px 0;
+                box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+                text-align: center;
+                display: none;
+            }
+
+            #camera-preview {
+                width: 100%;
+                max-width: 400px;
+                height: 300px;
+                border-radius: 8px;
+                background-color: #f5f5f5;
+                object-fit: cover;
+                margin: 10px 0;
+            }
+
+            #captured-photo {
+                width: 100%;
+                max-width: 400px;
+                border-radius: 8px;
+                margin: 10px 0;
+                display: none;
+            }
+
+            .camera-controls {
+                display: flex;
+                gap: 10px;
+                justify-content: center;
+                flex-wrap: wrap;
+                margin-top: 15px;
+            }
+
+            .camera-btn {
+                background-color: #ff9a9e;
+                padding: 8px 16px;
+                border-radius: 20px;
+                font-size: 14px;
+            }
+
+            .camera-btn:hover {
+                background-color: #ff8a8f;
+            }
+
+            .secondary-btn {
+                background-color: #6c757d;
+            }
+
+            .secondary-btn:hover {
+                background-color: #5a6268;
+            }
             .leaflet-popup-content {
                 font-family: "Helvetica Neue", Arial, sans-serif;
             }
@@ -85,6 +140,28 @@
         <h1>CAT APP 🐈‍⬛🐈</h1>
         <div id="cat-info">Click below to find your feline friends</div>
         <button onclick="findCats()">🐾 Locate Cats</button>
+        <button onclick="startCamera()">📸 Take Cat Photo</button>
+
+        <div id="camera-container">
+            <h3>📸 Cat Camera</h3>
+            <video id="camera-preview" autoplay playsinline></video>
+            <img id="captured-photo" alt="Captured cat photo" />
+            <div class="camera-controls">
+                <button class="camera-btn" onclick="capturePhoto()">
+                    📷 Capture
+                </button>
+                <button
+                    class="camera-btn secondary-btn"
+                    onclick="retakePhoto()"
+                >
+                    🔄 Retake
+                </button>
+                <button class="camera-btn secondary-btn" onclick="stopCamera()">
+                    ❌ Close
+                </button>
+            </div>
+        </div>
+
         <div id="map"></div>
 
         <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -120,7 +197,88 @@
                 popupAnchor: [0, -15],
             });
 
-            function findCats() {
+            // Camera functionality - Global variables
+            let cameraStream = null;
+            let cameraVideo = null;
+
+            // Camera functions - Explicitly global
+            window.startCamera = function () {
+                const container = document.getElementById("camera-container");
+                const video = document.getElementById("camera-preview");
+                const photo = document.getElementById("captured-photo");
+
+                container.style.display = "block";
+                video.style.display = "block";
+                photo.style.display = "none";
+
+                // Request camera access
+                navigator.mediaDevices
+                    .getUserMedia({
+                        video: {
+                            width: { ideal: 1280 },
+                            height: { ideal: 720 },
+                            facingMode: "environment", // Use back camera on mobile
+                        },
+                    })
+                    .then((stream) => {
+                        cameraStream = stream;
+                        cameraVideo = video;
+                        video.srcObject = stream;
+                    })
+                    .catch((err) => {
+                        console.error("Camera error:", err);
+                        alert(
+                            "📸 Could not access camera. Please check permissions."
+                        );
+                        container.style.display = "none";
+                    });
+            };
+
+            window.capturePhoto = function () {
+                if (!cameraVideo || !cameraStream) return;
+
+                const video = cameraVideo;
+                const photo = document.getElementById("captured-photo");
+                const canvas = document.createElement("canvas");
+                const context = canvas.getContext("2d");
+
+                // Set canvas size to video size
+                canvas.width = video.videoWidth;
+                canvas.height = video.videoHeight;
+
+                // Draw video frame to canvas
+                context.drawImage(video, 0, 0);
+
+                // Convert to image and display
+                const imageDataUrl = canvas.toDataURL("image/jpeg", 0.8);
+                photo.src = imageDataUrl;
+                photo.style.display = "block";
+                video.style.display = "none";
+
+                // Stop camera stream
+                cameraStream.getTracks().forEach((track) => track.stop());
+                cameraStream = null;
+
+                // Update info
+                const catInfo = document.getElementById("cat-info");
+                catInfo.innerHTML =
+                    "📸 <strong>Cat photo captured!</strong><br>Ready to spot more feline friends";
+            };
+
+            window.retakePhoto = function () {
+                startCamera(); // Restart camera
+            };
+
+            window.stopCamera = function () {
+                if (cameraStream) {
+                    cameraStream.getTracks().forEach((track) => track.stop());
+                    cameraStream = null;
+                }
+                document.getElementById("camera-container").style.display =
+                    "none";
+            };
+
+            window.findCats = function () {
                 const catInfo = document.getElementById("cat-info");
                 catInfo.textContent = "Searching for cats...";
 
@@ -135,7 +293,7 @@
                     catInfo.textContent =
                         "Geolocation not supported by your browser";
                 }
-            }
+            };
 
             function showCatLocation(position) {
                 const lat = position.coords.latitude;
