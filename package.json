@@ -1,0 +1,20 @@
+{
+    "name": "cat-app",
+    "version": "1.0.0",
+    "description": "An interactive cat tracking application",
+    "main": "index.js",
+    "scripts": {
+        "dev": "vite",
+        "build": "vite build",
+        "preview": "vite preview"
+    },
+    "dependencies": {
+        "leaflet-css": "^0.1.0",
+        "preact": "^10.19.2"
+    },
+    "devDependencies": {
+        "@preact/preset-vite": "^2.8.0",
+        "vite": "^4.5.0"
+    },
+    "type": "module"
+}
