@@ -8,37 +8,39 @@
  * @returns {Object} The created marker
  */
 export const addCatMarker = (map, { lat, lng }, photoUrl, name, catNumber) => {
-  if (!map || !window.L) return null;
+  if (!map || !window.L || !map._loaded) return null;
 
-  // Create a custom marker
-  const marker = window.L.marker([lat, lng], {
-    icon: window.L.divIcon({
-      html: `<div class="cat-marker">🐱</div>`,
-      className: 'cat-icon',
-      iconSize: [40, 40],
-      iconAnchor: [20, 40]
-    })
-  }).addTo(map);
+  try {
+    // Create a custom marker
+    const marker = window.L.marker([lat, lng], {
+      icon: window.L.divIcon({
+        html: `<div class="cat-marker">🐱</div>`,
+        className: 'cat-icon',
+        iconSize: [40, 40],
+        iconAnchor: [20, 40]
+      })
+    }).addTo(map);
 
-  // Create popup content
-  const popupContent = `
-    <div style="text-align: center;">
-      <img src="${photoUrl}" style="max-width: 200px; max-height: 200px; border-radius: 8px; margin-bottom: 8px;"/>
-      <p>${name} #${catNumber}</p>
-      <p>Spotted at: ${new Date().toLocaleString()}</p>
-    </div>
-  `;
+    // Create popup content
+    const popupContent = `
+      <div style="text-align: center;">
+        <img src="${photoUrl}" style="max-width: 200px; max-height: 200px; border-radius: 8px; margin-bottom: 8px;"/>
+        <p>${name} #${catNumber}</p>
+        <p>Spotted at: ${new Date().toLocaleString()}</p>
+      </div>
+    `;
 
-  // Add popup to marker and open it
-  marker.bindPopup(popupContent).openPopup();
-  
-  // Center map on the new marker
-  map.flyTo([lat, lng], 15, {
-    duration: 1,
-    easeLinearity: 0.25,
-  });
+    // Add popup to marker
+    marker.bindPopup(popupContent);
+    
+    // Don't auto-open popup to avoid issues during initial load
+    // marker.openPopup();
 
-  return marker;
+    return marker;
+  } catch (error) {
+    console.error('Error adding cat marker:', error);
+    return null;
+  }
 };
 
 /**

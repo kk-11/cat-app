@@ -1,11 +1,10 @@
-import { h } from "preact";
-import { useState, useEffect, useRef } from "preact/hooks";
+
+import { useState, useEffect, useRef, useCallback } from "preact/hooks";
 import "./styles/main.css";
 import catService from "./services/catService";
 import Map from "./components/Map";
-import { addCatMarker } from "./utils/mapUtils";
 
-const App = () => {
+export const App = () => {
     const [cameraActive, setCameraActive] = useState(false);
     const [capturedPhoto, setCapturedPhoto] = useState(null);
     const [currentLocation, setCurrentLocation] = useState(null);
@@ -18,22 +17,81 @@ const App = () => {
     const cameraStreamRef = useRef(null);
     const mapInstance = useRef(null);
 
-    // Load cats on component mount
+    // Get user's geolocation and load nearby cats
     useEffect(() => {
-        const loadCats = async () => {
+        const loadCats = async (position) => {
             try {
                 setLoading(true);
-                const data = await catService.getAllCats();
+                const { latitude, longitude } = position.coords;
+                const data = await catService.getAllCats({
+                    lat: latitude,
+                    lng: longitude
+                });
                 setCats(data);
+                setCurrentLocation({ latitude, longitude });
+                
+                // Center map on user's location if map is already loaded
+                if (mapInstance.current) {
+                    mapInstance.current.setView([latitude, longitude], 13, {
+                        animate: true,
+                        duration: 1
+                    });
+                }
             } catch (err) {
                 console.error("Failed to load cats:", err);
-                setError("Failed to load cats. Please try again later.");
+                // Fallback to loading all cats if geolocation fails
+                try {
+                    const data = await catService.getAllCats();
+                    setCats(data);
+                } catch (fallbackErr) {
+                    console.error("Failed to load all cats:", fallbackErr);
+                    setError("Failed to load cats. Please try again later.");
+                }
             } finally {
                 setLoading(false);
             }
         };
 
-        loadCats();
+        // Request geolocation permission
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                loadCats,
+                async (error) => {
+                    console.warn("Geolocation error:", error);
+                    // Fallback to loading all cats if geolocation is denied
+                    try {
+                        setLoading(true);
+                        const data = await catService.getAllCats();
+                        setCats(data);
+                    } catch (err) {
+                        console.error("Failed to load all cats:", err);
+                        setError("Failed to load cats. Please try again later.");
+                    } finally {
+                        setLoading(false);
+                    }
+                },
+                {
+                    enableHighAccuracy: true,
+                    timeout: 5000,
+                    maximumAge: 0
+                }
+            );
+        } else {
+            // Browser doesn't support geolocation, load all cats
+            const loadAllCats = async () => {
+                try {
+                    setLoading(true);
+                    const data = await catService.getAllCats();
+                    setCats(data);
+                } catch (err) {
+                    console.error("Failed to load all cats:", err);
+                    setError("Failed to load cats. Please try again later.");
+                } finally {
+                    setLoading(false);
+                }
+            };
+            loadAllCats();
+        }
     }, []);
 
     useEffect(() => {
@@ -147,10 +205,15 @@ const App = () => {
         setCapturedPhoto(null);
     };
 
-    // Handle map initialization
-    const handleMapInit = (map) => {
+    // Handle location updates from the Map component
+    const handleLocationUpdate = useCallback(({ latitude, longitude }) => {
+        setCurrentLocation({ latitude, longitude });
+    }, []);
+    
+    // Handle map instance reference for flyTo functionality
+    const handleMapInit = useCallback((map) => {
         mapInstance.current = map;
-    };
+    }, []);
 
     // Render loading state
     if (loading) {
@@ -179,9 +242,45 @@ const App = () => {
         <div className="app">
             <h1>CAT APP 🐈‍⬛🐈</h1>
 
+            <div
+                className="map-container"
+                style={{
+                    marginBottom: "2rem",
+                    borderRadius: "8px",
+                    overflow: "hidden",
+                    boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+                }}
+            >
+                <h2 style={{ textAlign: "center", marginBottom: "1rem" }}>
+                    Cats Near You
+                </h2>
+                <Map
+                    style={{ height: "400px" }}
+                    className="map-container"
+                    cats={cats}
+                    currentLocation={currentLocation}
+                    onLocationUpdate={handleLocationUpdate}
+                />
+            </div>
+
             <div className="cats-grid">
-                {cats.map((cat) => (
-                    <div key={cat.id} className="cat-card">
+                {cats.map((cat, index) => (
+                    <div
+                        key={cat.id}
+                        className="cat-card"
+                        onClick={() => {
+                            if (cat.location && mapInstance.current) {
+                                mapInstance.current.flyTo(
+                                    [cat.location.lat, cat.location.lng],
+                                    15,
+                                    {
+                                        duration: 1,
+                                        easeLinearity: 0.25,
+                                    }
+                                );
+                            }
+                        }}
+                    >
                         <img
                             src={cat.pic}
                             alt={cat.name}
@@ -192,12 +291,20 @@ const App = () => {
                             }}
                         />
                         <div className="cat-info">
-                            <h3>{cat.name}</h3>
+                            <h3>
+                                {cat.name}{" "}
+                                {cat.distance && (
+                                    <span className="distance">
+                                        ({cat.distance.toFixed(1)} km away)
+                                    </span>
+                                )}
+                            </h3>
                             <p>
                                 <strong>Breed:</strong> {cat.breed}
                             </p>
                             <p>
-                                <strong>Age:</strong> {cat.age} years
+                                <strong>Age:</strong> {cat.age} year
+                                {cat.age !== 1 ? "s" : ""}
                             </p>
                             <p>{cat.description}</p>
                             <button
@@ -270,9 +377,10 @@ const App = () => {
                 </div>
             )}
 
-            <Map onMapInit={handleMapInit} className="map-container" />
+            {/* <Map onMapInit={handleMapInit} className="map-container" /> */}
         </div>
     );
 };
 
+// Default export for client-side rendering
 export default App;

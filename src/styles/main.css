@@ -15,14 +15,56 @@ h1 {
     margin-bottom: 20px;
 }
 
-#map {
-    height: 400px;
+/* Map Styles */
+.map {
+    height: 100%;
     width: 100%;
-    border-radius: 12px;
-    margin: 20px 0;
+    border-radius: 8px;
     border: 1px solid #e0e0e0;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-    filter: contrast(1.1) brightness(0.98);
+    background-color: #f8f9fa;
+}
+
+.map-container {
+    position: relative;
+    margin: 20px 0;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Cat Markers */
+.cat-marker {
+    font-size: 24px;
+    text-align: center;
+    text-shadow: 0 0 3px rgba(0, 0, 0, 0.5);
+    transform: translateY(-20px);
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+.cat-marker:hover {
+    transform: translateY(-20px) scale(1.2);
+}
+
+/* User Location Marker */
+.user-location-marker {
+    font-size: 24px;
+    text-shadow: 0 0 5px rgba(0, 0, 0, 0.7);
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.2); }
+    100% { transform: scale(1); }
+}
+
+/* Distance indicator */
+.distance {
+    font-size: 0.8em;
+    color: #666;
+    font-weight: normal;
+    margin-left: 8px;
 }
 
 /* Buttons */

@@ -1,4 +1,7 @@
-import { catApi } from '../data/cats';
+import { get } from '../utils/api';
+
+// Base URL for the API
+const API_BASE = '/api';
 
 /**
  * Service for interacting with cat-related API endpoints
@@ -6,12 +9,21 @@ import { catApi } from '../data/cats';
 const catService = {
   /**
    * Get all cats
+   * @param {Object} [location] - Optional location object with lat and lng
    * @returns {Promise<Array>} - List of cats
    */
-  getAllCats: async () => {
+  getAllCats: async (location = null) => {
     try {
-      // In a real app, this would be: return api.get('/cats');
-      return await catApi.getAllCats();
+      let url = `${API_BASE}/cats`;
+      
+      // If location is provided, add it as query parameters
+      if (location && location.lat !== undefined && location.lng !== undefined) {
+        url += `?lat=${location.lat}&lng=${location.lng}`;
+      }
+      
+      const response = await get(url);
+      // The API returns { cats: [...], totalCats: X }
+      return response.cats || [];
     } catch (error) {
       console.error('Failed to fetch cats:', error);
       throw error;
@@ -20,13 +32,12 @@ const catService = {
 
   /**
    * Get a single cat by ID
-   * @param {string} id - The cat's ID
+   * @param {string|number} id - The cat's ID
    * @returns {Promise<Object>} - The cat data
    */
   getCatById: async (id) => {
     try {
-      // In a real app, this would be: return api.get(`/cats/${id}`);
-      return await catApi.getCatById(id);
+      return await get(`${API_BASE}/cats/${id}`);
     } catch (error) {
       console.error(`Failed to fetch cat with ID ${id}:`, error);
       throw error;
@@ -55,14 +66,7 @@ const catService = {
    */
   addCat: async (catData) => {
     try {
-      // In a real app, this would be: return api.post('/cats', catData);
-      // For now, we'll just return the data with a new ID
-      const newCat = {
-        ...catData,
-        id: Date.now().toString(),
-      };
-      // In a real implementation, we would add this to our mock data
-      return newCat;
+      return await post(`${API_BASE}/cats`, catData);
     } catch (error) {
       console.error('Failed to add cat:', error);
       throw error;

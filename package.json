@@ -3,18 +3,25 @@
     "version": "1.0.0",
     "description": "An interactive cat tracking application",
     "main": "index.js",
+    "type": "module",
     "scripts": {
         "dev": "vite",
         "build": "vite build",
-        "preview": "vite preview"
+        "preview": "vite preview",
+        "start": "node server/index.js",
+        "dev:server": "nodemon --watch server server/index.js",
+        "dev:all": "concurrently \"npm run dev\" \"npm run dev:server\""
     },
     "dependencies": {
-        "leaflet-css": "^0.1.0",
-        "preact": "^10.19.2"
+        "compression": "^1.8.1",
+        "express": "^5.1.0",
+        "leaflet-css": "^0.1.0"
     },
     "devDependencies": {
-        "@preact/preset-vite": "^2.8.0",
+        "@preact/preset-vite": "^2.10.2",
+        "concurrently": "^9.2.0",
+        "nodemon": "^3.1.10",
+        "npm-run-all": "^4.1.5",
         "vite": "^4.5.0"
-    },
-    "type": "module"
+    }
 }
