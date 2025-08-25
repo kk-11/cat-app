@@ -1,7 +1,11 @@
 import { Router } from "express";
-import { mockCats } from "../../src/data/cats.js";
+import { v4 as uuidv4 } from 'uuid';
+import { mockCats } from "../data/cats.js";
 
 const router = Router();
+
+// In-memory storage (replace with database in production)
+let cats = [...mockCats];
 
 // Helper function to calculate distance between two points using Haversine formula
 function calculateDistance(lat1, lon1, lat2, lon2) {
@@ -15,14 +19,13 @@ function calculateDistance(lat1, lon1, lat2, lon2) {
             Math.sin(dLon / 2) *
             Math.sin(dLon / 2);
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-    const distance = R * c; // Distance in km
-    return distance;
+    return R * c; // Distance in km
 }
 
-// Helper function to get the 3 closest cats to a given location
+// Helper function to get the closest cats to a given location
 function getClosestCats(lat, lng, count = 3) {
     // Add distance to each cat
-    const catsWithDistance = mockCats.map((cat) => ({
+    const catsWithDistance = cats.map((cat) => ({
         ...cat,
         distance: calculateDistance(
             lat,
@@ -38,16 +41,30 @@ function getClosestCats(lat, lng, count = 3) {
         .slice(0, count)
         .map(({ distance, ...cat }) => ({
             ...cat,
-            distance: parseFloat(distance.toFixed(2)), // Round to 2 decimal places
+            distance: parseFloat(distance.toFixed(2)),
         }));
 }
 
-// Get all cats
+// Get all cats or search by query
 router.get("/", (req, res) => {
     try {
-        const { lat, lng } = req.query;
+        const { lat, lng, q } = req.query;
 
-        // If lat and lng are provided, return the 3 closest cats
+        // If search query is provided
+        if (q) {
+            const query = q.toLowerCase();
+            const filteredCats = cats.filter(cat => 
+                cat.name.toLowerCase().includes(query) ||
+                (cat.breed && cat.breed.toLowerCase().includes(query)) ||
+                (cat.description && cat.description.toLowerCase().includes(query))
+            );
+            return res.json({
+                cats: filteredCats,
+                totalCats: filteredCats.length
+            });
+        }
+
+        // If lat and lng are provided, return the closest cats
         if (lat && lng) {
             const latNum = parseFloat(lat);
             const lngNum = parseFloat(lng);
@@ -61,15 +78,14 @@ router.get("/", (req, res) => {
             const closestCats = getClosestCats(latNum, lngNum);
             return res.json({
                 cats: closestCats,
-                userLocation: { lat: latNum, lng: lngNum },
-                totalCats: mockCats.length,
+                totalCats: cats.length,
             });
         }
 
         // Otherwise, return all cats
         res.json({
-            cats: mockCats,
-            totalCats: mockCats.length,
+            cats,
+            totalCats: cats.length,
         });
     } catch (error) {
         console.error("Error fetching cats:", error);
@@ -77,11 +93,12 @@ router.get("/", (req, res) => {
     }
 });
 
-// Get single cat by ID
+// Get a single cat by ID
 router.get("/:id", (req, res) => {
     try {
-        const catId = parseInt(req.params.id, 10);
-        const cat = mockCats.find((c) => c.id === catId);
+        const { id } = req.params;
+        const cat = cats.find(c => c.id === id);
+        
         if (!cat) {
             return res.status(404).json({ error: "Cat not found" });
         }
