@@ -1,20 +1,12 @@
-// import { h } from "preact";
-import { render } from "preact";
+import React from "react";
+import { createRoot } from "react-dom/client";
 import App from "./App";
 
-import "leaflet-css";
+const container = document.getElementById("app");
+const root = createRoot(container);
 
-// Initialize the app
-function init() {
-    const app = document.getElementById("app");
-    if (app) {
-        render(<App />, app);
-    }
-}
-
-// Load the app
-if (document.readyState !== "loading") {
-    init();
-} else {
-    document.addEventListener("DOMContentLoaded", init);
-}
+root.render(
+    <React.StrictMode>
+        <App />
+    </React.StrictMode>
+);

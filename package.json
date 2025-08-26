@@ -1,27 +1,30 @@
 {
     "name": "cat-app",
-    "version": "1.0.0",
-    "description": "An interactive cat tracking application",
-    "main": "index.js",
+    "version": "0.0.1",
+    "description": "meow meow meow",
     "type": "module",
     "scripts": {
         "dev": "vite",
+        "dev:server": "nodemon --watch server server/index.js",
+        "dev:all": "concurrently \"npm run dev\" \"npm run dev:server\"",
         "build": "vite build",
         "preview": "vite preview",
-        "start": "node server/index.js",
-        "dev:server": "nodemon --watch server server/index.js",
-        "dev:all": "concurrently \"npm run dev\" \"npm run dev:server\""
+        "start": "node server/index.js"
     },
     "dependencies": {
         "compression": "^1.8.1",
         "express": "^5.1.0",
-        "leaflet-css": "^0.1.0"
+        "react": "^18.2.0",
+        "react-dom": "^18.2.0",
+        "react-leaflet": "^4.2.1"
     },
     "devDependencies": {
-        "@preact/preset-vite": "^2.10.2",
-        "concurrently": "^9.2.0",
-        "nodemon": "^3.1.10",
-        "npm-run-all": "^4.1.5",
-        "vite": "^4.5.0"
+        "@types/leaflet": "^1.9.8",
+        "@types/react": "^18.2.21",
+        "@types/react-dom": "^18.2.7",
+        "@vitejs/plugin-react": "^4.0.4",
+        "concurrently": "^8.2.1",
+        "nodemon": "^3.0.1",
+        "vite": "^4.4.9"
     }
 }

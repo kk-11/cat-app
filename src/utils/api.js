@@ -100,6 +100,6 @@ export default {
   get,
   post,
   put,
-  delete: del,
+  del,
   request: fetchApi,
 };

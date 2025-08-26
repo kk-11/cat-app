@@ -1,4 +1,4 @@
-import { createContext, useContext, useCallback } from 'preact/hooks';
+import React, { createContext, useContext, useCallback, useState } from 'react';
 import { get } from '../utils/api';
 
 const CatContext = createContext();
@@ -12,13 +12,15 @@ export const CatProvider = ({ children }) => {
         try {
             setLoading(true);
             setError(null);
-            
-            const params = location ? { 
-                lat: location.latitude, 
-                lng: location.longitude 
-            } : {};
-            
-            const response = await get('/api/cats', params);
+
+            const params = location
+                ? {
+                      lat: location.latitude,
+                      lng: location.longitude,
+                  }
+                : {};
+
+            const response = await get("/api/cats", params);
             setCats(response.cats || []);
             return response.cats || [];
         } catch (err) {
@@ -53,17 +55,13 @@ export const CatProvider = ({ children }) => {
         addCat,
     };
 
-    return (
-        <CatContext.Provider value={value}>
-            {children}
-        </CatContext.Provider>
-    );
+    return <CatContext.Provider value={value}>{children}</CatContext.Provider>;
 };
 
 export const useCats = () => {
     const context = useContext(CatContext);
     if (!context) {
-        throw new Error('useCats must be used within a CatProvider');
+        throw new Error("useCats must be used within a CatProvider");
     }
     return context;
 };

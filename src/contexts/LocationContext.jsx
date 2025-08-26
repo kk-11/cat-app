@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useCallback, useEffect } from 'preact/hooks';
+import React, { createContext, useContext, useState, useCallback, useEffect } from 'react';
 
 const LocationContext = createContext();
 
@@ -10,7 +10,9 @@ export const LocationProvider = ({ children }) => {
     const getCurrentLocation = useCallback(() => {
         return new Promise((resolve, reject) => {
             if (!navigator.geolocation) {
-                const error = new Error('Geolocation is not supported by your browser');
+                const error = new Error(
+                    "Geolocation is not supported by your browser"
+                );
                 setLocationError(error.message);
                 reject(error);
                 return;
@@ -25,7 +27,7 @@ export const LocationProvider = ({ children }) => {
                         latitude: position.coords.latitude,
                         longitude: position.coords.longitude,
                         accuracy: position.coords.accuracy,
-                        timestamp: position.timestamp
+                        timestamp: position.timestamp,
                     };
                     setCurrentLocation(location);
                     setIsLoading(false);
@@ -40,7 +42,7 @@ export const LocationProvider = ({ children }) => {
                 {
                     enableHighAccuracy: true,
                     timeout: 5000,
-                    maximumAge: 0
+                    maximumAge: 0,
                 }
             );
         });
@@ -58,7 +60,7 @@ export const LocationProvider = ({ children }) => {
         locationError,
         isLoading,
         getCurrentLocation,
-        setCurrentLocation
+        setCurrentLocation,
     };
 
     return (
@@ -71,7 +73,7 @@ export const LocationProvider = ({ children }) => {
 export const useLocation = () => {
     const context = useContext(LocationContext);
     if (!context) {
-        throw new Error('useLocation must be used within a LocationProvider');
+        throw new Error("useLocation must be used within a LocationProvider");
     }
     return context;
 };

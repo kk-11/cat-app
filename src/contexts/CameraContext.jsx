@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useRef, useCallback } from 'preact/hooks';
+import React, { createContext, useContext, useState, useRef, useCallback, useEffect } from 'react';
 
 const CameraContext = createContext();
 
@@ -13,14 +13,14 @@ export const CameraProvider = ({ children }) => {
         try {
             setError(null);
             const stream = await navigator.mediaDevices.getUserMedia({
-                video: { 
-                    facingMode: 'environment',
+                video: {
+                    facingMode: "environment",
                     width: { ideal: 1920 },
-                    height: { ideal: 1080 }
+                    height: { ideal: 1080 },
                 },
-                audio: false
+                audio: false,
             });
-            
+
             if (cameraVideoRef.current) {
                 cameraVideoRef.current.srcObject = stream;
                 cameraVideoRef.current.play();
@@ -29,7 +29,9 @@ export const CameraProvider = ({ children }) => {
             }
         } catch (err) {
             console.error("Error accessing camera:", err);
-            setError("Could not access the camera. Please ensure you've granted camera permissions.");
+            setError(
+                "Could not access the camera. Please ensure you've granted camera permissions."
+            );
             setCameraActive(false);
             throw err;
         }
@@ -37,33 +39,33 @@ export const CameraProvider = ({ children }) => {
 
     const stopCamera = useCallback(() => {
         if (cameraStreamRef.current) {
-            cameraStreamRef.current.getTracks().forEach(track => {
+            cameraStreamRef.current.getTracks().forEach((track) => {
                 track.stop();
             });
             cameraStreamRef.current = null;
         }
-        
+
         if (cameraVideoRef.current) {
             cameraVideoRef.current.srcObject = null;
         }
-        
+
         setCameraActive(false);
     }, []);
 
     const capturePhoto = useCallback(() => {
         if (!cameraVideoRef.current) return null;
-        
+
         const video = cameraVideoRef.current;
-        const canvas = document.createElement('canvas');
+        const canvas = document.createElement("canvas");
         canvas.width = video.videoWidth;
         canvas.height = video.videoHeight;
-        
-        const ctx = canvas.getContext('2d');
+
+        const ctx = canvas.getContext("2d");
         ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-        
-        const photoUrl = canvas.toDataURL('image/jpeg');
+
+        const photoUrl = canvas.toDataURL("image/jpeg");
         setCapturedPhoto(photoUrl);
-        
+
         return photoUrl;
     }, []);
 
@@ -99,7 +101,7 @@ export const CameraProvider = ({ children }) => {
 export const useCamera = () => {
     const context = useContext(CameraContext);
     if (!context) {
-        throw new Error('useCamera must be used within a CameraProvider');
+        throw new Error("useCamera must be used within a CameraProvider");
     }
     return context;
 };
