@@ -17,8 +17,8 @@ export const addCatMarker = (map, { lat, lng }, photoUrl, name, catNumber) => {
         html: `<div class="cat-marker">🐱</div>`,
         className: 'cat-icon',
         iconSize: [40, 40],
-        iconAnchor: [20, 40]
-      })
+        iconAnchor: [20, 40],
+      }),
     }).addTo(map);
 
     // Create popup content
@@ -32,7 +32,7 @@ export const addCatMarker = (map, { lat, lng }, photoUrl, name, catNumber) => {
 
     // Add popup to marker
     marker.bindPopup(popupContent);
-    
+
     // Don't auto-open popup to avoid issues during initial load
     // marker.openPopup();
 
@@ -51,7 +51,7 @@ export const addCatMarker = (map, { lat, lng }, photoUrl, name, catNumber) => {
  */
 export const createPhotoMarker = (location, photoUrl) => {
   if (!window.L) return null;
-  
+
   return window.L.marker([location.lat, location.lng], {
     icon: window.L.divIcon({
       className: 'photo-marker',

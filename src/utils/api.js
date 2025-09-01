@@ -21,7 +21,7 @@ export const fetchApi = async (endpoint, options = {}) => {
 
   // Create the full URL
   const url = `${API_BASE_URL}${endpoint}`;
-  
+
   // Create the request config
   const config = {
     ...options,
@@ -30,7 +30,7 @@ export const fetchApi = async (endpoint, options = {}) => {
 
   try {
     const response = await fetch(url, config);
-    
+
     // Check if the response is ok (status in the range 200-299)
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));

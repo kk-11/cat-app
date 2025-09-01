@@ -27,7 +27,7 @@ app.use('/api/cats', catsRouter);
 // Serve static files from the Vite build in production
 if (process.env.NODE_ENV === 'production') {
   app.use(express.static(join(__dirname, '../dist')));
-  
+
   // For all other routes in production, serve index.html (client-side routing)
   app.get('*', (req, res) => {
     res.sendFile(join(__dirname, '../dist/index.html'));
