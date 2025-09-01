@@ -8,8 +8,8 @@ export const mockCats = [
     breed: 'Tabby',
     description: 'A playful and curious tabby who loves to explore.',
     location: {
-      lat: 48.8566, // Paris, France
-      lng: 2.3522,
+      lat: 48.1366, // Munich city center (near Marienplatz)
+      lng: 11.4944,
     },
   },
   {
@@ -20,8 +20,8 @@ export const mockCats = [
     breed: 'Siamese',
     description: 'A vocal and affectionate Siamese who loves attention.',
     location: {
-      lat: 48.8606, // Near Paris
-      lng: 2.3376,
+      lat: 48.137, // Munich — a few blocks northwest
+      lng: 11.4928,
     },
   },
   {
@@ -32,8 +32,8 @@ export const mockCats = [
     breed: 'Maine Coon',
     description: 'A gentle giant who loves to cuddle.',
     location: {
-      lat: 48.8584, // Near Eiffel Tower
-      lng: 2.2945,
+      lat: 48.1352, // Munich — southeast of center
+      lng: 11.496,
     },
   },
   {
@@ -44,8 +44,8 @@ export const mockCats = [
     breed: 'Tuxedo',
     description: 'A playful kitten with endless energy.',
     location: {
-      lat: 48.8522, // Latin Quarter, Paris
-      lng: 2.3429,
+      lat: 48.1348, // Munich — southwest of center
+      lng: 11.4919,
     },
   },
   {
@@ -56,8 +56,8 @@ export const mockCats = [
     breed: 'Bengal',
     description: 'An active and intelligent cat who loves to climb.',
     location: {
-      lat: 48.8667, // Montmartre, Paris
-      lng: 2.3333,
+      lat: 48.138, // Munich — northeast of center
+      lng: 11.4975,
     },
   },
 ];

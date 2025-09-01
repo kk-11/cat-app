@@ -1,27 +1,21 @@
 import React, { useRef } from 'react';
+import './styles/reset.css';
 import './styles/main.css';
+
 import Map from './components/Map';
+import CatList from './components/CatList.jsx';
 import { CatProvider } from './contexts/CatContext';
+import { CameraStuff } from './components/CameraStuff.jsx';
 import { LocationProvider } from './contexts/LocationContext';
-import { CameraProvider, useCamera } from './contexts/CameraContext';
+import { CameraProvider } from './contexts/CameraContext';
 import { useCats } from './contexts/CatContext';
 
 // Main App component that wraps everything with context providers
 const AppContent = () => {
-  const {
-    cameraActive,
-    capturedPhoto,
-    cameraVideoRef,
-    startCamera,
-    stopCamera,
-    capturePhoto,
-    clearPhoto,
-  } = useCamera();
   const { cats, loading, error, fetchCats } = useCats();
 
   const mapInstance = useRef(null);
 
-  // Handle map initialization
   const handleMapInit = (map) => {
     mapInstance.current = map;
   };
@@ -29,49 +23,11 @@ const AppContent = () => {
   return (
     <div className="app">
       <main>
+        <CatList cats={cats} />
         <div className="map-container">
           <Map onMapInit={handleMapInit} fetchCats={fetchCats} cats={cats} />
         </div>
-
-        <div className="camera-section">
-          <h2>Camera</h2>
-          {!cameraActive ? (
-            <button onClick={startCamera} className="btn">
-              Open Camera
-            </button>
-          ) : (
-            <div className="camera-preview">
-              <video
-                ref={cameraVideoRef}
-                autoPlay
-                playsInline
-                className="camera-feed"
-              />
-              <div className="camera-controls">
-                <button onClick={capturePhoto} className="btn">
-                  Take Photo
-                </button>
-                <button onClick={stopCamera} className="btn btn-secondary">
-                  Close Camera
-                </button>
-              </div>
-            </div>
-          )}
-
-          {capturedPhoto && (
-            <div className="preview-container">
-              <h3>Captured Photo</h3>
-              <img
-                src={capturedPhoto}
-                alt="Captured"
-                className="photo-preview"
-              />
-              <button onClick={clearPhoto} className="btn btn-secondary">
-                Clear Photo
-              </button>
-            </div>
-          )}
-        </div>
+        <CameraStuff />
       </main>
     </div>
   );

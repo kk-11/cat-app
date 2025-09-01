@@ -8,7 +8,7 @@ export const CatProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const fetchCats = useCallback(async (location = null) => {
+  const fetchCats = useCallback(async (location = null, count = 5) => {
     try {
       setLoading(true);
       setError(null);
@@ -17,8 +17,9 @@ export const CatProvider = ({ children }) => {
         ? {
             lat: location.latitude,
             lng: location.longitude,
+            count,
           }
-        : {};
+        : { count };
 
       const response = await get('/api/cats', params);
       setCats(response.cats || []);

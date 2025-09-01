@@ -22,13 +22,14 @@ function calculateDistance(lat1, lon1, lat2, lon2) {
 }
 
 // Helper function to get the closest cats to a given location
-function getClosestCats(lat, lng, count = 3) {
+function getClosestCats(lat, lng, count = 5) {
   // Add distance to each cat
   const catsWithDistance = cats.map((cat) => ({
     ...cat,
     distance: calculateDistance(lat, lng, cat.location.lat, cat.location.lng),
   }));
 
+  console.log({ catsWithDistance });
   // Sort by distance and return the closest ones
   return catsWithDistance
     .sort((a, b) => a.distance - b.distance)
@@ -42,7 +43,7 @@ function getClosestCats(lat, lng, count = 3) {
 // Get all cats or search by query
 router.get('/', (req, res) => {
   try {
-    const { lat, lng, q } = req.query;
+    const { lat, lng, q, count } = req.query;
 
     // If search query is provided
     if (q) {
@@ -63,6 +64,9 @@ router.get('/', (req, res) => {
     if (lat && lng) {
       const latNum = parseFloat(lat);
       const lngNum = parseFloat(lng);
+      const countNum = Number.isNaN(parseInt(count, 10))
+        ? 5
+        : parseInt(count, 10);
 
       if (isNaN(latNum) || isNaN(lngNum)) {
         return res.status(400).json({
@@ -70,7 +74,7 @@ router.get('/', (req, res) => {
         });
       }
 
-      const closestCats = getClosestCats(latNum, lngNum);
+      const closestCats = getClosestCats(latNum, lngNum, countNum);
       return res.json({
         cats: closestCats,
         totalCats: cats.length,
