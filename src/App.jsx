@@ -10,9 +10,8 @@ import { LocationProvider } from './contexts/LocationContext';
 import { CameraProvider } from './contexts/CameraContext';
 import { useCats } from './contexts/CatContext';
 
-// Main App component that wraps everything with context providers
-const AppContent = () => {
-  const { cats, loading, error, fetchCats } = useCats();
+const Content = () => {
+  const { cats, fetchCats } = useCats();
 
   const mapInstance = useRef(null);
 
@@ -24,21 +23,20 @@ const AppContent = () => {
     <div className="app">
       <main>
         <CatList cats={cats} />
-        <div className="map-container">
-          <Map onMapInit={handleMapInit} fetchCats={fetchCats} cats={cats} />
-        </div>
+
+        <Map onMapInit={handleMapInit} fetchCats={fetchCats} cats={cats} />
+
         <CameraStuff />
       </main>
     </div>
   );
 };
 
-// Main App component with all providers
 const App = () => (
   <LocationProvider>
     <CatProvider>
       <CameraProvider>
-        <AppContent />
+        <Content />
       </CameraProvider>
     </CatProvider>
   </LocationProvider>

@@ -76,49 +76,50 @@ const Map = ({ fetchCats, cats = [] }) => {
   }
 
   return (
-    <div style={mapStyle}>
-      <MapContainer
-        center={position}
-        // max is 18
-        zoom={18}
-        style={mapStyle}
-        ref={mapRef}
-      >
-        <TileLayer
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-        />
-        <MapEvents onMoveEnd={handleMoveEnd} />
-        <Marker position={position}>
-          <Popup>Your Location</Popup>
-        </Marker>
-        {/* {cats.map(
-                    (cat) =>
-                        cat?.location && (
-                            <Marker
-                                key={cat.id}
-                                position={[
-                                    cat.location.latitude,
-                                    cat.location.longitude,
-                                ]}
-                            >
-                                <Popup>
-                                    <h3>{cat.name || "Unnamed Cat"}</h3>
-                                    {cat.pic && (
-                                        <img
-                                            src={cat.pic}
-                                            alt={cat.name || "Cat"}
-                                            style={{
-                                                maxWidth: "150px",
-                                                height: "auto",
-                                            }}
-                                        />
-                                    )}
-                                </Popup>
-                            </Marker>
-                        )
-                )} */}
-      </MapContainer>
+    <div className="map-container">
+      <div style={mapStyle}>
+        <MapContainer
+          center={position}
+          // max is 18
+          zoom={18}
+          style={mapStyle}
+          ref={mapRef}
+        >
+          <TileLayer
+            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          />
+          <MapEvents onMoveEnd={handleMoveEnd} />
+          <Marker position={position}>
+            <Popup>Your Location</Popup>
+          </Marker>
+          {cats.map((cat) => {
+            console.log(cat);
+            return (
+              cat?.location && (
+                <Marker
+                  key={cat.id}
+                  position={[cat.location.lat, cat.location.lng]}
+                >
+                  <Popup>
+                    <h3>{cat.name || 'Unnamed Cat'}</h3>
+                    {cat.pic && (
+                      <img
+                        src={cat.pic}
+                        alt={cat.name || 'Cat'}
+                        style={{
+                          maxWidth: '150px',
+                          height: 'auto',
+                        }}
+                      />
+                    )}
+                  </Popup>
+                </Marker>
+              )
+            );
+          })}
+        </MapContainer>
+      </div>
     </div>
   );
 };
