@@ -1,84 +1,77 @@
 import { NextResponse } from 'next/server';
-import { mockCats } from '../../../data/cats.js';
+import { createClient } from '@supabase/supabase-js';
 
-// In-memory storage (replace with database in production)
-let cats = [...mockCats];
+// Server-side client with Service Role Key (never exposed to frontend)
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL,
+  process.env.SUPABASE_SERVICE_ROLE_KEY,
+);
 
-// Mark this route as dynamic to avoid static rendering during export
 export const dynamic = 'force-dynamic';
-
-function calculateDistance(lat1, lon1, lat2, lon2) {
-  const R = 6371; // km
-  const dLat = (lat2 - lat1) * (Math.PI / 180);
-  const dLon = (lon2 - lon1) * (Math.PI / 180);
-  const a =
-    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-    Math.cos(lat1 * (Math.PI / 180)) *
-      Math.cos(lat2 * (Math.PI / 180)) *
-      Math.sin(dLon / 2) *
-      Math.sin(dLon / 2);
-  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-  return R * c;
-}
-
-function getClosestCats(lat, lng, count = 5) {
-  const catsWithDistance = cats.map((cat) => ({
-    ...cat,
-    distance: calculateDistance(lat, lng, cat.location.lat, cat.location.lng),
-  }));
-
-  return catsWithDistance
-    .sort((a, b) => a.distance - b.distance)
-    .slice(0, count)
-    .map(({ distance, ...cat }) => ({
-      ...cat,
-      distance: parseFloat(distance.toFixed(2)),
-    }));
-}
 
 export async function GET(request) {
   try {
     const { searchParams } = request.nextUrl;
-    const lat = searchParams.get('lat');
-    const lng = searchParams.get('lng');
-    const q = searchParams.get('q');
-    const countParam = searchParams.get('count');
 
-    if (q) {
-      const query = q.toLowerCase();
-      const filteredCats = cats.filter(
-        (cat) =>
-          cat.name.toLowerCase().includes(query) ||
-          (cat.breed && cat.breed.toLowerCase().includes(query)) ||
-          (cat.description && cat.description.toLowerCase().includes(query)),
+    // Parse query parameters
+    const lat = parseFloat(searchParams.get('lat'));
+    const lon = parseFloat(searchParams.get('lng'));
+    const count = parseInt(searchParams.get('count') || '5', 10);
+    const q = searchParams.get('q');
+
+    // Validate coordinates if provided
+    if ((lat && isNaN(lat)) || (lon && isNaN(lon))) {
+      return NextResponse.json(
+        { error: 'Invalid latitude or longitude' },
+        { status: 400 },
       );
-      return NextResponse.json({
-        cats: filteredCats,
-        totalCats: filteredCats.length,
-      });
     }
 
-    if (lat && lng) {
-      const latNum = parseFloat(lat);
-      const lngNum = parseFloat(lng);
-      const countNum = Number.isNaN(parseInt(countParam, 10))
-        ? 5
-        : parseInt(countParam, 10);
+    let cats;
 
-      if (Number.isNaN(latNum) || Number.isNaN(lngNum)) {
-        return NextResponse.json(
-          { error: 'Invalid latitude or longitude parameters' },
-          { status: 400 },
-        );
+    // If lat/lon are provided, fetch closest cats via RPC
+    if (!isNaN(lat) && !isNaN(lon)) {
+      const { data, error } = await supabase.rpc('get_closest_cats', {
+        lat,
+        lon,
+        radius: count,
+      });
+
+      if (error) {
+        console.error('RPC get_closest_cats error:', error);
+        return NextResponse.json({ error: error.message }, { status: 500 });
       }
 
-      const closestCats = getClosestCats(latNum, lngNum, countNum);
-      return NextResponse.json({ cats: closestCats, totalCats: cats.length });
+      cats = data;
+    } else {
+      // Otherwise, fetch a limited number of cats
+      const { data, error } = await supabase
+        .from('cats')
+        .select('id, name, breed, age, description, pic, owner')
+        .limit(count);
+
+      if (error) {
+        console.error('Supabase select error:', error);
+        return NextResponse.json({ error: error.message }, { status: 500 });
+      }
+
+      cats = data;
+    }
+
+    // Optional text search filter
+    if (q) {
+      const query = q.toLowerCase();
+      cats = cats.filter(
+        (cat) =>
+          cat.name?.toLowerCase().includes(query) ||
+          cat.breed?.toLowerCase().includes(query) ||
+          cat.description?.toLowerCase().includes(query),
+      );
     }
 
     return NextResponse.json({ cats, totalCats: cats.length });
-  } catch (error) {
-    console.error('Error fetching cats:', error);
+  } catch (err) {
+    console.error('Unexpected error fetching cats:', err);
     return NextResponse.json(
       { error: 'Failed to fetch cats' },
       { status: 500 },

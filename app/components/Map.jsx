@@ -6,6 +6,10 @@ import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { useLocation } from '../contexts/LocationContext.jsx';
 
+const attribution =
+  '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors';
+const url = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
+
 const EmojiIcon = (emoji) =>
   L.divIcon({
     html: emoji,
@@ -19,7 +23,6 @@ const Map = ({ fetchCats, cats = [] }) => {
   const [position, setPosition] = useState(null);
   const { currentLocation } = useLocation();
 
-  // Initialize map at some default position
   useEffect(() => {
     // const gotthardstrasse = [48.1362654, 11.4918432];
     // const acricolastrasse = [48.1426927, 11.4931448];
@@ -46,11 +49,7 @@ const Map = ({ fetchCats, cats = [] }) => {
         style={{ height: '100%', width: '100%' }}
         ref={mapRef}
       >
-        <TileLayer
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-        />
-
+        <TileLayer attribution={attribution} url={url} />
         <Marker position={position} icon={EmojiIcon('⌾')}>
           <Popup>Your Location</Popup>
         </Marker>
