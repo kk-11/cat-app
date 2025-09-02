@@ -18,7 +18,8 @@ const EmojiIcon = (emoji) =>
     iconAnchor: [25, 25],
   });
 
-const Map = ({ fetchCats, cats = [] }) => {
+const Map = ({ fetchCats, cats }) => {
+  console.log('cats', cats);
   const mapRef = useRef(null);
   const [position, setPosition] = useState(null);
   const { currentLocation } = useLocation();

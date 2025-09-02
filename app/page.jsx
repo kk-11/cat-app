@@ -5,7 +5,7 @@ import Providers from './providers.jsx';
 import nextDynamic from 'next/dynamic';
 import CatList from './components/CatList.jsx';
 import Header from './components/Header.jsx';
-// These imports are browser-only; prevent SSR from evaluating them
+
 const Map = nextDynamic(() => import('./components/Map.jsx'), { ssr: false });
 const CameraStuff = nextDynamic(
   () =>
@@ -46,4 +46,3 @@ export default function Page() {
     </Providers>
   );
 }
-
