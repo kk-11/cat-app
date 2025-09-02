@@ -1,5 +1,3 @@
-import fetch from 'node-fetch';
-
 export async function handler(event) {
   try {
     // Parse the POST payload from Netlify deploy hook
