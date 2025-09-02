@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import React from "react";
-import { useCamera } from "../contexts/CameraContext.jsx";
+import React from 'react';
+import { useCamera } from '../contexts/CameraContext.jsx';
 
 export const CameraStuff = () => {
   const {

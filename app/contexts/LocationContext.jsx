@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import React, {
   createContext,
@@ -6,7 +6,7 @@ import React, {
   useState,
   useCallback,
   useEffect,
-} from "react";
+} from 'react';
 
 const LocationContext = createContext();
 
@@ -18,7 +18,7 @@ export const LocationProvider = ({ children }) => {
   const getCurrentLocation = useCallback(() => {
     return new Promise((resolve, reject) => {
       if (!navigator.geolocation) {
-        const error = new Error("Geolocation is not supported by your browser");
+        const error = new Error('Geolocation is not supported by your browser');
         setLocationError(error.message);
         reject(error);
         return;
@@ -79,7 +79,7 @@ export const LocationProvider = ({ children }) => {
 export const useLocation = () => {
   const context = useContext(LocationContext);
   if (!context) {
-    throw new Error("useLocation must be used within a LocationProvider");
+    throw new Error('useLocation must be used within a LocationProvider');
   }
   return context;
 };

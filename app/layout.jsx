@@ -1,10 +1,10 @@
-import React from "react";
+import React from 'react';
 export const metadata = {
-  title: "Cat App",
-  description: "Find nearby cats",
+  title: 'Cat App',
+  description: 'Find nearby cats',
 };
 
-import "./globals.css";
+import './globals.css';
 
 export default function RootLayout({ children }) {
   return (

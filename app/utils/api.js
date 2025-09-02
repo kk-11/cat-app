@@ -4,7 +4,7 @@
  */
 
 // Base URL for the API (empty for now as we're using mock data)
-const API_BASE_URL = "";
+const API_BASE_URL = '';
 
 /**
  * Make an API request
@@ -15,7 +15,7 @@ const API_BASE_URL = "";
 export const fetchApi = async (endpoint, options = {}) => {
   // Set default headers
   const headers = {
-    "Content-Type": "application/json",
+    'Content-Type': 'application/json',
     ...options.headers,
   };
 
@@ -34,7 +34,7 @@ export const fetchApi = async (endpoint, options = {}) => {
     // Check if the response is ok (status in the range 200-299)
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
-      const error = new Error(errorData.message || "Something went wrong");
+      const error = new Error(errorData.message || 'Something went wrong');
       error.status = response.status;
       error.data = errorData;
       throw error;
@@ -43,7 +43,7 @@ export const fetchApi = async (endpoint, options = {}) => {
     // Parse and return the JSON response
     return await response.json();
   } catch (error) {
-    console.error("API request failed:", error);
+    console.error('API request failed:', error);
     throw error;
   }
 };
@@ -57,7 +57,7 @@ export const fetchApi = async (endpoint, options = {}) => {
 export const get = async (endpoint, query = {}) => {
   const queryString = new URLSearchParams(query).toString();
   const url = queryString ? `${endpoint}?${queryString}` : endpoint;
-  return fetchApi(url, { method: "GET" });
+  return fetchApi(url, { method: 'GET' });
 };
 
 /**
@@ -68,7 +68,7 @@ export const get = async (endpoint, query = {}) => {
  */
 export const post = async (endpoint, data = {}) => {
   return fetchApi(endpoint, {
-    method: "POST",
+    method: 'POST',
     body: JSON.stringify(data),
   });
 };
@@ -81,7 +81,7 @@ export const post = async (endpoint, data = {}) => {
  */
 export const put = async (endpoint, data = {}) => {
   return fetchApi(endpoint, {
-    method: "PUT",
+    method: 'PUT',
     body: JSON.stringify(data),
   });
 };
@@ -92,7 +92,7 @@ export const put = async (endpoint, data = {}) => {
  * @returns {Promise<any>} - The response data
  */
 export const del = async (endpoint) => {
-  return fetchApi(endpoint, { method: "DELETE" });
+  return fetchApi(endpoint, { method: 'DELETE' });
 };
 
 // Export all HTTP methods

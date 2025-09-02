@@ -1,11 +1,11 @@
-import { NextResponse } from "next/server";
-import { mockCats } from "../../../data/cats.js";
+import { NextResponse } from 'next/server';
+import { mockCats } from '../../../data/cats.js';
 
 // In-memory storage (replace with database in production)
 let cats = [...mockCats];
 
 // Mark this route as dynamic to avoid static rendering during export
-export const dynamic = "force-dynamic";
+export const dynamic = 'force-dynamic';
 
 function calculateDistance(lat1, lon1, lat2, lon2) {
   const R = 6371; // km
@@ -39,10 +39,10 @@ function getClosestCats(lat, lng, count = 5) {
 export async function GET(request) {
   try {
     const { searchParams } = request.nextUrl;
-    const lat = searchParams.get("lat");
-    const lng = searchParams.get("lng");
-    const q = searchParams.get("q");
-    const countParam = searchParams.get("count");
+    const lat = searchParams.get('lat');
+    const lng = searchParams.get('lng');
+    const q = searchParams.get('q');
+    const countParam = searchParams.get('count');
 
     if (q) {
       const query = q.toLowerCase();
@@ -67,7 +67,7 @@ export async function GET(request) {
 
       if (Number.isNaN(latNum) || Number.isNaN(lngNum)) {
         return NextResponse.json(
-          { error: "Invalid latitude or longitude parameters" },
+          { error: 'Invalid latitude or longitude parameters' },
           { status: 400 },
         );
       }
@@ -78,9 +78,9 @@ export async function GET(request) {
 
     return NextResponse.json({ cats, totalCats: cats.length });
   } catch (error) {
-    console.error("Error fetching cats:", error);
+    console.error('Error fetching cats:', error);
     return NextResponse.json(
-      { error: "Failed to fetch cats" },
+      { error: 'Failed to fetch cats' },
       { status: 500 },
     );
   }

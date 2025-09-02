@@ -1,18 +1,18 @@
-"use client";
+'use client';
 
-import React, { useEffect, useCallback, useRef } from "react";
+import React, { useEffect, useCallback, useRef } from 'react';
 import {
   MapContainer,
   TileLayer,
   Marker,
   Popup,
   useMapEvents,
-} from "react-leaflet";
-import L from "leaflet";
+} from 'react-leaflet';
+import L from 'leaflet';
 
 // Fix for default marker icons
-import icon from "leaflet/dist/images/marker-icon.png";
-import iconShadow from "leaflet/dist/images/marker-shadow.png";
+import icon from 'leaflet/dist/images/marker-icon.png';
+import iconShadow from 'leaflet/dist/images/marker-shadow.png';
 
 const DefaultIcon = L.icon({
   iconUrl: icon,
@@ -25,10 +25,10 @@ const DefaultIcon = L.icon({
 L.Marker.prototype.options.icon = DefaultIcon;
 
 const mapStyle = {
-  height: "100%",
-  width: "100%",
-  minHeight: "400px",
-  borderRadius: "8px",
+  height: '100%',
+  width: '100%',
+  minHeight: '400px',
+  borderRadius: '8px',
 };
 
 const MapEvents = ({ onMoveEnd }) => {
@@ -79,12 +79,12 @@ const Map = ({ fetchCats, cats = [] }) => {
                 position={[cat.location.lat, cat.location.lng]}
               >
                 <Popup>
-                  <h3>{cat.name || "Unnamed Cat"}</h3>
+                  <h3>{cat.name || 'Unnamed Cat'}</h3>
                   {cat.pic && (
                     <img
                       src={cat.pic}
-                      alt={cat.name || "Cat"}
-                      style={{ maxWidth: "150px", height: "auto" }}
+                      alt={cat.name || 'Cat'}
+                      style={{ maxWidth: '150px', height: 'auto' }}
                     />
                   )}
                 </Popup>
