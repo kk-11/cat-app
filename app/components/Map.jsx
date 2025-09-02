@@ -1,59 +1,40 @@
 'use client';
 
-import React, { useEffect, useCallback, useRef, useState } from 'react';
-import {
-  MapContainer,
-  TileLayer,
-  Marker,
-  Popup,
-  useMapEvents,
-} from 'react-leaflet';
+import React, { useEffect, useRef, useState } from 'react';
+import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
+import { useLocation } from '../contexts/LocationContext.jsx';
 
-// Create a DivIcon for emoji markers
 const EmojiIcon = (emoji) =>
   L.divIcon({
     html: emoji,
-    className: 'emoji-marker', // no default Leaflet styles
+    className: 'emoji-marker',
     iconSize: [50, 50],
-    iconAnchor: [25, 25], // center the emoji
+    iconAnchor: [25, 25],
   });
-
-// Component to handle map move events
-const MapEvents = ({ onMoveEnd }) => {
-  useMapEvents({ moveend: onMoveEnd });
-  return null;
-};
 
 const Map = ({ fetchCats, cats = [] }) => {
   const mapRef = useRef(null);
   const [position, setPosition] = useState(null);
+  const { currentLocation } = useLocation();
 
   // Initialize map at some default position
   useEffect(() => {
-    const staticPosition = [48.1362654, 11.4918432]; // Example: Munich
-    setPosition(staticPosition);
+    // const gotthardstrasse = [48.1362654, 11.4918432];
+    // const acricolastrasse = [48.1426927, 11.4931448];
+    const location = [currentLocation.latitude, currentLocation.longitude];
+
+    setPosition(location);
 
     if (fetchCats) {
       fetchCats({
-        latitude: staticPosition[0],
-        longitude: staticPosition[1],
+        latitude: location[0],
+        longitude: location[1],
         radius: 5,
       });
     }
-  }, [fetchCats]);
-
-  // Handle map movement to fetch new nearby cats
-  const handleMoveEnd = useCallback(() => {
-    if (!mapRef.current || !fetchCats) return;
-    const center = mapRef.current.getCenter();
-    fetchCats({
-      latitude: center.lat,
-      longitude: center.lng,
-      radius: 5,
-    });
-  }, [fetchCats]);
+  }, [fetchCats, currentLocation]);
 
   if (!position) return <div>Loading map...</div>;
 
@@ -69,14 +50,11 @@ const Map = ({ fetchCats, cats = [] }) => {
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
-        <MapEvents onMoveEnd={handleMoveEnd} />
 
-        {/* User location marker */}
-        <Marker position={position} icon={EmojiIcon('📍')}>
+        <Marker position={position} icon={EmojiIcon('⌾')}>
           <Popup>Your Location</Popup>
         </Marker>
 
-        {/* Cat / Pokémon markers */}
         {cats.map(
           (cat) =>
             cat?.location && (
