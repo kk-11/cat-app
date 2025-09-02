@@ -1,22 +1,96 @@
 /* Basic styles for the cat app */
-.app { padding: 16px; max-width: 1000px; margin: 0 auto; }
-main { display: grid; grid-template-columns: 1fr; gap: 16px; }
+.app {
+  padding: 16px;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+main {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+}
 
-.cat-list { background: #fff; border: 1px solid #e5e5e5; border-radius: 8px; padding: 12px; }
-.cat-list h2 { margin: 0 0 8px; font-size: 20px; }
-.cat-list ul { list-style: none; padding: 0; margin: 0; display: grid; gap: 8px; }
-.cat-card { display: flex; gap: 12px; align-items: center; padding: 8px; border: 1px solid #eee; border-radius: 8px; background: #fafafa; }
-.cat-photo { width: 56px; height: 56px; object-fit: cover; border-radius: 6px; }
-.cat-info h3 { margin: 0; font-size: 16px; }
+.cat-list {
+  background: #fff;
+  border: 1px solid #e5e5e5;
+  border-radius: 8px;
+  padding: 12px;
+}
+.cat-list h2 {
+  margin: 0 0 8px;
+  font-size: 20px;
+}
+.cat-list ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 8px;
+}
+.cat-card {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  padding: 8px;
+  border: 1px solid #eee;
+  border-radius: 8px;
+  background: #fafafa;
+}
+.cat-photo {
+  width: 56px;
+  height: 56px;
+  object-fit: cover;
+  border-radius: 6px;
+}
+.cat-info h3 {
+  margin: 0;
+  font-size: 16px;
+}
 
-.map-container { background: #fff; border: 1px solid #e5e5e5; border-radius: 8px; padding: 8px; }
+.map-container {
+  background: #fff;
+  border: 1px solid #e5e5e5;
+  border-radius: 8px;
+  padding: 8px;
+}
 
-.camera-section { background: #fff; border: 1px solid #e5e5e5; border-radius: 8px; padding: 12px; }
-.camera-preview { display: grid; gap: 8px; }
-.camera-feed { width: 100%; border-radius: 8px; background: #000; min-height: 200px; }
-.camera-controls { display: flex; gap: 8px; }
-.btn { appearance: none; border: 1px solid #ccc; background: #111; color: #fff; padding: 8px 12px; border-radius: 6px; }
-.btn-secondary { background: #666; }
+.camera-section {
+  background: #fff;
+  border: 1px solid #e5e5e5;
+  border-radius: 8px;
+  padding: 12px;
+}
+.camera-preview {
+  display: grid;
+  gap: 8px;
+}
+.camera-feed {
+  width: 100%;
+  border-radius: 8px;
+  background: #000;
+  min-height: 200px;
+}
+.camera-controls {
+  display: flex;
+  gap: 8px;
+}
+.btn {
+  appearance: none;
+  border: 1px solid #ccc;
+  background: #111;
+  color: #fff;
+  padding: 8px 12px;
+  border-radius: 6px;
+}
+.btn-secondary {
+  background: #666;
+}
 
-.preview-container { margin-top: 10px; }
-.photo-preview { border-radius: 8px; border: 1px solid #eee; max-width: 320px; }
+.preview-container {
+  margin-top: 10px;
+}
+.photo-preview {
+  border-radius: 8px;
+  border: 1px solid #eee;
+  max-width: 320px;
+}

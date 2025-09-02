@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import React, {
   createContext,
@@ -7,7 +7,7 @@ import React, {
   useRef,
   useCallback,
   useEffect,
-} from 'react';
+} from "react";
 
 const CameraContext = createContext();
 
@@ -23,7 +23,7 @@ export const CameraProvider = ({ children }) => {
       setError(null);
       const stream = await navigator.mediaDevices.getUserMedia({
         video: {
-          facingMode: 'environment',
+          facingMode: "environment",
           width: { ideal: 1920 },
           height: { ideal: 1080 },
         },
@@ -37,7 +37,7 @@ export const CameraProvider = ({ children }) => {
         setCameraActive(true);
       }
     } catch (err) {
-      console.error('Error accessing camera:', err);
+      console.error("Error accessing camera:", err);
       setError(
         "Could not access the camera. Please ensure you've granted camera permissions.",
       );
@@ -65,14 +65,14 @@ export const CameraProvider = ({ children }) => {
     if (!cameraVideoRef.current) return null;
 
     const video = cameraVideoRef.current;
-    const canvas = document.createElement('canvas');
+    const canvas = document.createElement("canvas");
     canvas.width = video.videoWidth;
     canvas.height = video.videoHeight;
 
-    const ctx = canvas.getContext('2d');
+    const ctx = canvas.getContext("2d");
     ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-    const photoUrl = canvas.toDataURL('image/jpeg');
+    const photoUrl = canvas.toDataURL("image/jpeg");
     setCapturedPhoto(photoUrl);
 
     return photoUrl;
@@ -108,7 +108,7 @@ export const CameraProvider = ({ children }) => {
 export const useCamera = () => {
   const context = useContext(CameraContext);
   if (!context) {
-    throw new Error('useCamera must be used within a CameraProvider');
+    throw new Error("useCamera must be used within a CameraProvider");
   }
   return context;
 };

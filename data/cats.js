@@ -1,60 +1,60 @@
 // Mock cat data with geolocation
 export const mockCats = [
   {
-    id: '1',
-    name: 'Whiskers',
-    pic: 'https://cataas.com/cat?type=medium&rand=1',
+    id: "1",
+    name: "Whiskers",
+    pic: "https://cataas.com/cat?type=medium&rand=1",
     age: 3,
-    breed: 'Tabby',
-    description: 'A playful and curious tabby who loves to explore.',
+    breed: "Tabby",
+    description: "A playful and curious tabby who loves to explore.",
     location: {
       lat: 48.1366, // Munich city center (near Marienplatz)
       lng: 11.4944,
     },
   },
   {
-    id: '2',
-    name: 'Mittens',
-    pic: 'https://cataas.com/cat?type=medium&rand=2',
+    id: "2",
+    name: "Mittens",
+    pic: "https://cataas.com/cat?type=medium&rand=2",
     age: 2,
-    breed: 'Siamese',
-    description: 'A vocal and affectionate Siamese who loves attention.',
+    breed: "Siamese",
+    description: "A vocal and affectionate Siamese who loves attention.",
     location: {
       lat: 48.137, // Munich — a few blocks northwest
       lng: 11.4928,
     },
   },
   {
-    id: '3',
-    name: 'Oliver',
-    pic: 'https://cataas.com/cat?type=medium&rand=3',
+    id: "3",
+    name: "Oliver",
+    pic: "https://cataas.com/cat?type=medium&rand=3",
     age: 5,
-    breed: 'Maine Coon',
-    description: 'A gentle giant who loves to cuddle.',
+    breed: "Maine Coon",
+    description: "A gentle giant who loves to cuddle.",
     location: {
       lat: 48.1352, // Munich — southeast of center
       lng: 11.496,
     },
   },
   {
-    id: '4',
-    name: 'Luna',
-    pic: 'https://cataas.com/cat?type=medium&rand=4',
+    id: "4",
+    name: "Luna",
+    pic: "https://cataas.com/cat?type=medium&rand=4",
     age: 1,
-    breed: 'Tuxedo',
-    description: 'A playful kitten with endless energy.',
+    breed: "Tuxedo",
+    description: "A playful kitten with endless energy.",
     location: {
       lat: 48.1348, // Munich — southwest of center
       lng: 11.4919,
     },
   },
   {
-    id: '5',
-    name: 'Leo',
-    pic: 'https://cataas.com/cat?type=medium&rand=5',
+    id: "5",
+    name: "Leo",
+    pic: "https://cataas.com/cat?type=medium&rand=5",
     age: 4,
-    breed: 'Bengal',
-    description: 'An active and intelligent cat who loves to climb.',
+    breed: "Bengal",
+    description: "An active and intelligent cat who loves to climb.",
     location: {
       lat: 48.138, // Munich — northeast of center
       lng: 11.4975,

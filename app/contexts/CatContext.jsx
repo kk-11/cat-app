@@ -1,5 +1,5 @@
-import React, { createContext, useContext, useCallback, useState } from 'react';
-import { get } from '../utils/api';
+import React, { createContext, useContext, useCallback, useState } from "react";
+import { get } from "../utils/api";
 
 const CatContext = createContext();
 
@@ -21,12 +21,12 @@ export const CatProvider = ({ children }) => {
           }
         : { count };
 
-      const response = await get('/api/cats', params);
+      const response = await get("/api/cats", params);
       setCats(response.cats || []);
       return response.cats || [];
     } catch (err) {
-      console.error('Failed to fetch cats:', err);
-      setError('Failed to load cats. Please try again later.');
+      console.error("Failed to fetch cats:", err);
+      setError("Failed to load cats. Please try again later.");
       throw err;
     } finally {
       setLoading(false);
@@ -41,7 +41,7 @@ export const CatProvider = ({ children }) => {
       // setCats(prev => [...prev, newCat]);
       // return newCat;
     } catch (err) {
-      console.error('Failed to add cat:', err);
+      console.error("Failed to add cat:", err);
       throw err;
     } finally {
       setLoading(false);
@@ -62,7 +62,7 @@ export const CatProvider = ({ children }) => {
 export const useCats = () => {
   const context = useContext(CatContext);
   if (!context) {
-    throw new Error('useCats must be used within a CatProvider');
+    throw new Error("useCats must be used within a CatProvider");
   }
   return context;
 };

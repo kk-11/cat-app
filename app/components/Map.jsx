@@ -1,12 +1,18 @@
-'use client';
+"use client";
 
-import React, { useEffect, useCallback, useRef } from 'react';
-import { MapContainer, TileLayer, Marker, Popup, useMapEvents } from 'react-leaflet';
-import L from 'leaflet';
+import React, { useEffect, useCallback, useRef } from "react";
+import {
+  MapContainer,
+  TileLayer,
+  Marker,
+  Popup,
+  useMapEvents,
+} from "react-leaflet";
+import L from "leaflet";
 
 // Fix for default marker icons
-import icon from 'leaflet/dist/images/marker-icon.png';
-import iconShadow from 'leaflet/dist/images/marker-shadow.png';
+import icon from "leaflet/dist/images/marker-icon.png";
+import iconShadow from "leaflet/dist/images/marker-shadow.png";
 
 const DefaultIcon = L.icon({
   iconUrl: icon,
@@ -18,7 +24,12 @@ const DefaultIcon = L.icon({
 });
 L.Marker.prototype.options.icon = DefaultIcon;
 
-const mapStyle = { height: '100%', width: '100%', minHeight: '400px', borderRadius: '8px' };
+const mapStyle = {
+  height: "100%",
+  width: "100%",
+  minHeight: "400px",
+  borderRadius: "8px",
+};
 
 const MapEvents = ({ onMoveEnd }) => {
   useMapEvents({ moveend: onMoveEnd });
@@ -33,7 +44,11 @@ const Map = ({ fetchCats, cats = [] }) => {
     const staticPosition = [48.1362654, 11.4918432];
     setPosition(staticPosition);
     if (fetchCats) {
-      fetchCats({ latitude: staticPosition[0], longitude: staticPosition[1], radius: 5 });
+      fetchCats({
+        latitude: staticPosition[0],
+        longitude: staticPosition[1],
+        radius: 5,
+      });
     }
   }, [fetchCats]);
 
@@ -59,10 +74,19 @@ const Map = ({ fetchCats, cats = [] }) => {
           </Marker>
           {cats.map((cat) =>
             cat?.location ? (
-              <Marker key={cat.id} position={[cat.location.lat, cat.location.lng]}>
+              <Marker
+                key={cat.id}
+                position={[cat.location.lat, cat.location.lng]}
+              >
                 <Popup>
-                  <h3>{cat.name || 'Unnamed Cat'}</h3>
-                  {cat.pic && <img src={cat.pic} alt={cat.name || 'Cat'} style={{ maxWidth: '150px', height: 'auto' }} />}
+                  <h3>{cat.name || "Unnamed Cat"}</h3>
+                  {cat.pic && (
+                    <img
+                      src={cat.pic}
+                      alt={cat.name || "Cat"}
+                      style={{ maxWidth: "150px", height: "auto" }}
+                    />
+                  )}
                 </Popup>
               </Marker>
             ) : null,
