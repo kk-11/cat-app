@@ -4,6 +4,9 @@ import { mockCats } from '../../../data/cats.js';
 // In-memory storage (replace with database in production)
 let cats = [...mockCats];
 
+// Mark this route as dynamic to avoid static rendering during export
+export const dynamic = 'force-dynamic';
+
 function calculateDistance(lat1, lon1, lat2, lon2) {
   const R = 6371; // km
   const dLat = (lat2 - lat1) * (Math.PI / 180);
@@ -31,7 +34,7 @@ function getClosestCats(lat, lng, count = 5) {
 
 export async function GET(request) {
   try {
-    const { searchParams } = new URL(request.url);
+    const { searchParams } = request.nextUrl;
     const lat = searchParams.get('lat');
     const lng = searchParams.get('lng');
     const q = searchParams.get('q');

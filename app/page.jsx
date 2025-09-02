@@ -2,10 +2,15 @@
 
 import React, { useRef } from 'react';
 import Providers from './providers.jsx';
-import Map from './components/Map.jsx';
+import nextDynamic from 'next/dynamic';
 import CatList from './components/CatList.jsx';
-import { CameraStuff } from './components/CameraStuff.jsx';
+// These imports are browser-only; prevent SSR from evaluating them
+const Map = nextDynamic(() => import('./components/Map.jsx'), { ssr: false });
+const CameraStuff = nextDynamic(() => import('./components/CameraStuff.jsx').then(m => m.CameraStuff ?? m.default), { ssr: false });
 import { useCats } from './contexts/CatContext.jsx';
+
+// Ensure this page is treated as dynamic (no static HTML prerender)
+export const dynamic = 'force-dynamic';
 
 function Content() {
   const { cats, fetchCats } = useCats();

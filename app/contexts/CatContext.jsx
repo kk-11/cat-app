@@ -33,7 +33,7 @@ export const CatProvider = ({ children }) => {
     }
   }, []);
 
-  const addCat = useCallback(async () => {
+  const addCat = useCallback(async (catData) => {
     try {
       setLoading(true);
       // TODO: Implement add cat API call
