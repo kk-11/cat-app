@@ -3,12 +3,11 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import L from 'leaflet';
-import 'leaflet/dist/leaflet.css';
 import { useLocation } from '../contexts/LocationContext.jsx';
 
 const attribution =
   '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors';
-const url = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
+const url = "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
 
 const EmojiIcon = (emoji) =>
   L.divIcon({
