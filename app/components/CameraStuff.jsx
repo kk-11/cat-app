@@ -1,5 +1,7 @@
+'use client';
+
 import React from 'react';
-import { useCamera } from '../contexts/CameraContext';
+import { useCamera } from '../contexts/CameraContext.jsx';
 
 export const CameraStuff = () => {
   const {
@@ -11,6 +13,7 @@ export const CameraStuff = () => {
     capturePhoto,
     clearPhoto,
   } = useCamera();
+
   return (
     <div className="camera-section">
       <h2>Camera</h2>
@@ -20,12 +23,7 @@ export const CameraStuff = () => {
         </button>
       ) : (
         <div className="camera-preview">
-          <video
-            ref={cameraVideoRef}
-            autoPlay
-            playsInline
-            className="camera-feed"
-          />
+          <video ref={cameraVideoRef} autoPlay playsInline className="camera-feed" />
           <div className="camera-controls">
             <button onClick={capturePhoto} className="btn">
               Take Photo

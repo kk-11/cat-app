@@ -4,7 +4,17 @@ import pluginReact from 'eslint-plugin-react';
 import { defineConfig } from 'eslint/config';
 
 export default defineConfig([
-  { ignores: ['dist'] },
+  {
+    ignores: [
+      'node_modules',
+      'dist',
+      '.next',
+      'build',
+      'coverage',
+      'out',
+      'public',
+    ],
+  },
   {
     files: ['**/*.{js,mjs,cjs,jsx}'],
     plugins: { js },
