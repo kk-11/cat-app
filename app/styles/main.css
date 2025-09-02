@@ -94,3 +94,7 @@ main {
   border: 1px solid #eee;
   max-width: 320px;
 }
+
+.emoji-marker {
+  font-size: 50px;
+}

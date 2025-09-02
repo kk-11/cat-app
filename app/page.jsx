@@ -4,6 +4,7 @@ import React, { useRef } from 'react';
 import Providers from './providers.jsx';
 import nextDynamic from 'next/dynamic';
 import CatList from './components/CatList.jsx';
+import Header from './components/Header.jsx';
 // These imports are browser-only; prevent SSR from evaluating them
 const Map = nextDynamic(() => import('./components/Map.jsx'), { ssr: false });
 const CameraStuff = nextDynamic(
@@ -28,6 +29,7 @@ function Content() {
 
   return (
     <div className="app">
+      <Header />
       <main>
         <CatList cats={cats} />
         <Map onMapInit={handleMapInit} fetchCats={fetchCats} cats={cats} />
@@ -44,3 +46,4 @@ export default function Page() {
     </Providers>
   );
 }
+
