@@ -18,12 +18,12 @@ const EmojiIcon = (emoji) =>
   });
 
 const Map = ({ fetchCats, cats }) => {
-  console.log('cats', cats);
   const mapRef = useRef(null);
   const [position, setPosition] = useState(null);
   const { currentLocation } = useLocation();
 
   useEffect(() => {
+    if(!currentLocation) return;
     // const gotthardstrasse = [48.1362654, 11.4918432];
     // const acricolastrasse = [48.1426927, 11.4931448];
     const location = [currentLocation.latitude, currentLocation.longitude];
