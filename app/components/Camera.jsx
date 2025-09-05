@@ -27,7 +27,7 @@ export const Camera = () => {
       <div>
         <input
           type="file"
-          accept="image/*"
+          accept="video/*;capture=camcorder"
           capture="environment"
           onChange={handleFileChange}
         />
