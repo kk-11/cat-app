@@ -7,11 +7,8 @@ import Cats from './components/Cats.jsx';
 import Header from './components/Header.jsx';
 
 const Map = nextDynamic(() => import('./components/Map.jsx'), { ssr: false });
-const CameraStuff = nextDynamic(
-  () =>
-    import('./components/CameraStuff.jsx').then(
-      (m) => m.CameraStuff ?? m.default,
-    ),
+const Camera = nextDynamic(
+  () => import('./components/Camera.jsx').then((m) => m.Camera ?? m.default),
   { ssr: false },
 );
 import { useCats } from './contexts/CatContext.jsx';
@@ -33,7 +30,7 @@ function Content() {
       <main>
         <Cats cats={cats} loading={loading} />
         <Map onMapInit={handleMapInit} fetchCats={fetchCats} cats={cats} />
-        <CameraStuff />
+        <Camera />
       </main>
     </div>
   );
