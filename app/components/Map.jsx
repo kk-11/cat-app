@@ -7,7 +7,7 @@ import { useLocation } from '../contexts/LocationContext.jsx';
 
 const attribution =
   '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors';
-const url = "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
+const url = 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png';
 
 const EmojiIcon = (emoji) =>
   L.divIcon({
@@ -17,27 +17,19 @@ const EmojiIcon = (emoji) =>
     iconAnchor: [25, 25],
   });
 
-const Map = ({ fetchCats, cats }) => {
+const Map = ({ cats }) => {
   const mapRef = useRef(null);
   const [position, setPosition] = useState(null);
   const { currentLocation } = useLocation();
 
   useEffect(() => {
-    if(!currentLocation) return;
+    if (!currentLocation) return;
     // const gotthardstrasse = [48.1362654, 11.4918432];
     // const acricolastrasse = [48.1426927, 11.4931448];
     const location = [currentLocation.latitude, currentLocation.longitude];
 
     setPosition(location);
-
-    if (fetchCats) {
-      fetchCats({
-        latitude: location[0],
-        longitude: location[1],
-        radius: 5,
-      });
-    }
-  }, [fetchCats, currentLocation]);
+  }, [currentLocation]);
 
   if (!position) return <div>Loading map...</div>;
 

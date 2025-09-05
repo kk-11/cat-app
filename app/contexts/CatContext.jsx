@@ -32,6 +32,7 @@ export const CatProvider = ({ children }) => {
       setLoading(false);
     }
   }, []);
+  
 
   const addCat = useCallback(async (catData) => {
     try {
