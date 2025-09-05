@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useRef } from 'react';
+import React, { useRef } from 'react';
 import Providers from './providers.jsx';
 import nextDynamic from 'next/dynamic';
 import Cats from './components/Cats.jsx';
@@ -16,14 +16,12 @@ const CameraStuff = nextDynamic(
 );
 import { useCats } from './contexts/CatContext.jsx';
 
+// Ensure this page is treated as dynamic (no static HTML prerender)
 export const dynamic = 'force-dynamic';
 
 function Content() {
   const { cats, loading, fetchCats } = useCats();
   const mapInstance = useRef(null);
-  useEffect(() => {
-    fetchCats();
-  }, []);
 
   const handleMapInit = (map) => {
     mapInstance.current = map;
@@ -34,7 +32,7 @@ function Content() {
       <Header />
       <main>
         <Cats cats={cats} loading={loading} />
-        <Map onMapInit={handleMapInit} cats={cats} />
+        <Map onMapInit={handleMapInit} fetchCats={fetchCats} cats={cats} />
         <CameraStuff />
       </main>
     </div>
